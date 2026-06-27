@@ -8,7 +8,7 @@
     <input v-model='keyword' class='form-control my-3' placeholder='도서 검색'>
 
     <div class='mb-4'>
-      <h4>✨ 내가 많이 클릭한 책 추천</h4>
+      <h4>✨ 사람들이 많이 클릭한 책 추천</h4>
       <div class='row g-3'>
         <div class='col-md-4' v-for='book in featuredBooks' :key='book.id'>
           <div class='card border-0 shadow-sm h-100'>
@@ -17,6 +17,7 @@
               <h5 class='card-title'>{{ book.title }}</h5>
               <p class='card-text text-muted small'>{{ book.author }}</p>
               <p class='card-text'>{{ book.description }}</p>
+              <p class='card-text text-primary fw-semibold mb-0'>클릭 수: {{ book.clickCount }}</p>
             </div>
           </div>
         </div>
@@ -54,7 +55,7 @@ import { getBooks } from '../api/bookApi'
 const keyword = ref('')
 const selectedCategory = ref('전체')
 const books = ref(getBooks())
-const clickCounts = ref(loadClickCounts())
+const clickCounts = ref(loadGlobalClickCounts())
 
 const categories = computed(() => ['전체', ...new Set(books.value.map((book) => book.category))])
 
@@ -74,10 +75,10 @@ const filtered = computed(() => {
   })
 })
 
-function loadClickCounts() {
+function loadGlobalClickCounts() {
   if (typeof window === 'undefined') return {}
 
-  const saved = window.localStorage.getItem('book-click-counts')
+  const saved = window.localStorage.getItem('global-book-click-counts')
   return saved ? JSON.parse(saved) : {}
 }
 
@@ -86,7 +87,7 @@ function handleBookClick(bookId) {
   clickCounts.value = nextCounts
 
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem('book-click-counts', JSON.stringify(nextCounts))
+    window.localStorage.setItem('global-book-click-counts', JSON.stringify(nextCounts))
   }
 }
 </script>
